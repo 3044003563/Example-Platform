@@ -1,12 +1,6 @@
-# MyAgent插件开发模板
 
 
-## 插件开发好之后测试环境下载
-https://myagent.im/doc.html?course_id=10001&id=39
 
-
-## 插件开发详细教程
-https://myagent.im/doc.html?course_id=10001
 
 
 ## 实现技术：
