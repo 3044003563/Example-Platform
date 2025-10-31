@@ -1,0 +1,125 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 左侧导航栏 */
+.sidebar {
+    width: 50px;
+    background-color: #333333; /* 更改为深灰色背景，类似截图 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.sidebar-item {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 0; /* 移除圆角 */
+    position: relative;
+    color: #999999; /* 默认图标为浅灰色 */
+}
+
+.sidebar-item:hover {
+    color: #ffffff; /* 悬停时图标变为白色 */
+    background-color: transparent; /* 移除背景色 */
+}
+
+.sidebar-item.active {
+    background-color: transparent; /* 移除背景色 */
+    color: #0052d9; /* 活动状态时图标为蓝色 RGB(0,82,217) */
+    box-shadow: none; /* 移除阴影 */
+}
+
+.sidebar-item i {
+    font-size: 18px; /* 稍微调大图标 */
+}
+
+/* 工具提示 */
+.sidebar-item::after {
+    content: attr(data-title);
+    position: absolute;
+    left: 55px;
+    white-space: nowrap;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    pointer-events: none;
+}
+
+/* 右侧内容区 */
+.content {
+    flex: 1;
+    background-color: #f5f5f5;
+    position: relative;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 移除之前的伪元素头像 */
+.sidebar::before {
+    content: none;
+}
+
+/* 添加头像容器样式 */
+.avatar-container {
+    margin: 15px 0 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #4d4d4d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.avatar:hover {
+    background-color: #5a5a5a;
+}
+
+.avatar i {
+    font-size: 20px;
+    color: #cccccc;
+}
+
+/* 如果使用实际图片头像，确保图片填满容器 */
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none; /* 默认隐藏图片，当有实际头像时再显示 */
+}

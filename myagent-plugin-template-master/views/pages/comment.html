@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>评论管理</title>
+    <link rel="stylesheet" href="../css/comment.css">
+    <script src="../js/message.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="comment-container">
+        <div class="action-bar">
+            <button class="btn blue" onclick="showAddDialog()">新增评论</button>
+            <button class="btn" onclick="showCollectDialog()">采集</button>
+            <button class="btn red" onclick="batchDelete()">批量删除</button>
+            <button class="btn cyan" onclick="refreshList()">刷新</button>
+        </div>
+
+        <div class="search-bar">
+            <div class="search-input">
+                <input type="text" id="searchInput" placeholder="搜索链接/内容/作者/IP">
+                <button class="search-btn" onclick="search()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="item-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                        <th>链接</th>
+                        <th>评论内容</th>
+                        <th>评论时间</th>
+                        <th>作者</th>
+                        <th>IP</th>
+                        <th>创建时间</th>
+                        <th>修改时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="itemList"></tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <div class="pagination-container">
+                <div class="pagination-info">共 <span id="totalCount">0</span> 项</div>
+                <div class="page-size">
+                    每页显示：
+                    <select id="pageSize" onchange="changePageSize()">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="page-list">
+                    <button class="page-btn" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
+                    <div class="page-numbers" id="pageNumbers"></div>
+                    <button class="page-btn" onclick="nextPage()"><i class="fas fa-chevron-right"></i></button>
+                    <div class="page-jump">
+                        <input type="text" id="pageInput" value="1">
+                        <span>页</span>
+                        <button class="btn" onclick="jumpToPage()">跳转</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑弹窗复用 -->
+    <div id="editDialog" class="modal">
+        <div class="modal-content">
+            <h3 id="dialogTitle">新增评论</h3>
+            <div class="form-group">
+                <label>链接：</label>
+                <input type="text" id="link" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>评论内容：</label>
+                <textarea id="content" rows="4" placeholder="请输入评论内容"></textarea>
+            </div>
+            <div class="form-group">
+                <label>评论时间：</label>
+                <input type="text" id="comment_time" placeholder="YYYY-MM-DD HH:MM:SS">
+            </div>
+            <div class="form-group">
+                <label>作者：</label>
+                <input type="text" id="author" placeholder="作者昵称/ID">
+            </div>
+            <div class="form-group">
+                <label>IP：</label>
+                <input type="text" id="ip" placeholder="例如 1.2.3.4">
+            </div>
+            <input type="hidden" id="editId">
+            <div class="button-group">
+                <button class="btn gray" onclick="hideDialog()">取消</button>
+                <button class="btn blue" onclick="submitDialog()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 采集弹窗 -->
+    <div id="collectDialog" class="modal">
+        <div class="modal-content">
+            <h3>采集任务</h3>
+            <div class="form-group">
+                <label>采集关键词：</label>
+                <input type="text" id="collectKeyword" placeholder="请输入采集关键词">
+            </div>
+            <div class="form-group">
+                <label>采集账号：</label>
+                <select id="collectAccount"></select>
+            </div>
+            <div class="button-group">
+                <button class="btn gray" onclick="hideCollectDialog()">取消</button>
+                <button class="btn blue" onclick="submitCollect()">开始采集</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const pluginName = urlParams.get('pluginName') || 'myagent-plugin-template';
+        const version = urlParams.get('version') || '1.0.0';
+
+        let currentPage = 1;
+        let pageSize = 10;
+        let keyword = '';
+
+        function api() {
+            return window.parent && window.parent.parent && window.parent.parent.pywebview && window.parent.parent.pywebview.api && window.parent.parent.pywebview.api.plugin;
+        }
+
+        async function loadItems(page = 1, newKeyword = null, newPageSize = null) {
+            const itemList = document.getElementById('itemList');
+            itemList.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;">加载中...</td></tr>';
+            try {
+                currentPage = page;
+                if (newKeyword !== null) keyword = newKeyword;
+                if (newPageSize !== null) pageSize = newPageSize;
+
+                console.log('调用参数:', {
+                    plugin_name: pluginName,
+                    version: version,
+                    controller_name: 'comment_controller',
+                    method_name: 'get_comments',
+                    page: currentPage,
+                    page_size: pageSize,
+                    keyword: keyword
+                });
+
+                const result = await api().handle_api_call({
+                    controller_name: 'comment_controller',
+                    method_name: 'get_comments',
+                    page: currentPage,
+                    page_size: pageSize,
+                    keyword: keyword
+                });
+
+                console.log('API返回结果:', result);
+                if (result && result.success && result.data) {
+                    renderTable(result.data.items || []);
+                    renderPagination(result.data);
+                } else {
+                    console.error('API调用失败:', result);
+                    itemList.innerHTML = '<tr><td colspan="9" style="text-align:center;color:red;padding:20px;">加载失败: ' + (result?.message || '未知错误') + '</td></tr>';
+                    document.getElementById('totalCount').textContent = '0';
+                    document.getElementById('pageNumbers').innerHTML = '';
+                }
+            } catch (e) {
+                console.error('加载失败:', e);
+                itemList.innerHTML = '<tr><td colspan="9" style="text-align:center;color:red;padding:20px;">加载失败</td></tr>';
+                document.getElementById('totalCount').textContent = '0';
+                document.getElementById('pageNumbers').innerHTML = '';
+            }
+        }
+
+        function renderTable(items) {
+            const itemList = document.getElementById('itemList');
+            itemList.innerHTML = '';
+            if (!Array.isArray(items) || items.length === 0) {
+                itemList.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#888;">暂无数据</td></tr>';
+                return;
+            }
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type=\"checkbox\" class=\"row-checkbox\" value=\"${item.id}\" onchange=\"updateSelectAllState()\"></td>
+                    <td>${item.link || ''}</td>
+                    <td class=\"content-cell\" title=\"${(item.content || '').replace(/\"/g,'&quot;')}\">${item.content || ''}</td>
+                    <td>${item.comment_time || ''}</td>
+                    <td>${item.author || ''}</td>
+                    <td>${item.ip || ''}</td>
+                    <td>${item.created_at || ''}</td>
+                    <td>${item.updated_at || ''}</td>
+                    <td>
+                        <a href=\"javascript:void(0)\" class=\"link-btn edit\" onclick=\"showEdit(${item.id}, '${(item.link||'').replace(/'/g, '&#39;')}', '${(item.content||'').replace(/'/g, '&#39;')}', '${(item.comment_time||'').replace(/'/g, '&#39;')}', '${(item.author||'').replace(/'/g, '&#39;')}', '${(item.ip||'').replace(/'/g, '&#39;')}')\">修改</a>
+                        <a href=\"javascript:void(0)\" class=\"link-btn delete\" onclick=\"deleteItem(${item.id})\">删除</a>
+                    </td>
+                `;
+                itemList.appendChild(tr);
+            });
+        }
+
+        function renderPagination(data) {
+            document.getElementById('totalCount').textContent = data.total || 0;
+            const pageSizeSel = document.getElementById('pageSize');
+            pageSizeSel.value = data.page_size || 10;
+            const totalPages = Math.ceil((data.total || 0) / (data.page_size || 10));
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            const current = parseInt(data.page || 1);
+            let start = Math.max(1, current - 2);
+            let end = Math.min(totalPages, start + 4);
+            if (end - start < 4) start = Math.max(1, end - 4);
+            for (let i = start; i <= end; i++) {
+                const span = document.createElement('span');
+                span.textContent = i;
+                if (i === current) span.className = 'current';
+                span.onclick = () => loadItems(i);
+                pageNumbers.appendChild(span);
+            }
+            document.getElementById('pageInput').value = current;
+            const prevBtn = document.querySelector('.page-btn:first-child');
+            const nextBtn = document.querySelector('.page-btn:last-child');
+            if (prevBtn) prevBtn.disabled = current === 1;
+            if (nextBtn) nextBtn.disabled = current === totalPages;
+        }
+
+        function search() {
+            const kw = document.getElementById('searchInput').value;
+            loadItems(1, kw);
+        }
+        document.getElementById('searchInput').addEventListener('keyup', function(e){ if (e.key==='Enter') search(); });
+
+        function changePageSize(){
+            const newSize = parseInt(document.getElementById('pageSize').value);
+            loadItems(1, null, newSize);
+        }
+        function prevPage(){ if (currentPage>1) loadItems(currentPage-1); }
+        function nextPage(){ loadItems(currentPage+1); }
+        function jumpToPage(){
+            const p = parseInt(document.getElementById('pageInput').value);
+            if (p>0) loadItems(p); else document.getElementById('pageInput').value = currentPage;
+        }
+
+        function toggleSelectAll(checkbox){
+            const boxes = document.querySelectorAll('.row-checkbox');
+            boxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+        function updateSelectAllState(){
+            const all = document.querySelectorAll('.row-checkbox');
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            const selectAll = document.getElementById('selectAll');
+            if (all.length>0) selectAll.checked = all.length===checked.length;
+        }
+
+        function showAddDialog(){
+            document.getElementById('dialogTitle').textContent = '新增评论';
+            document.getElementById('editId').value = '';
+            document.getElementById('link').value = '';
+            document.getElementById('content').value = '';
+            document.getElementById('comment_time').value = '';
+            document.getElementById('author').value = '';
+            document.getElementById('ip').value = '';
+            document.getElementById('editDialog').style.display = 'block';
+        }
+        function showEdit(id, link, content, comment_time, author, ip){
+            document.getElementById('dialogTitle').textContent = '编辑评论';
+            document.getElementById('editId').value = id;
+            document.getElementById('link').value = link;
+            document.getElementById('content').value = content;
+            document.getElementById('comment_time').value = comment_time;
+            document.getElementById('author').value = author;
+            document.getElementById('ip').value = ip;
+            document.getElementById('editDialog').style.display = 'block';
+        }
+        function hideDialog(){ document.getElementById('editDialog').style.display = 'none'; }
+
+        // ===== 采集相关 =====
+        function showCollectDialog(){
+            document.getElementById('collectKeyword').value = '';
+            document.getElementById('collectDialog').style.display = 'block';
+            loadCollectAccountsComment();
+        }
+        function hideCollectDialog(){
+            document.getElementById('collectDialog').style.display = 'none';
+        }
+        async function loadCollectAccountsComment(){
+            try{
+                const apiInstance = api();
+                if (!apiInstance){
+                    MessageManager.error('API 未就绪');
+                    return;
+                }
+                const res = await apiInstance.handle_api_call({
+                    plugin_name: pluginName,
+                    version: version,
+                    controller_name: 'accountmanage_controller',
+                    method_name: 'get_accounts'
+                });
+                const sel = document.getElementById('collectAccount');
+                sel.innerHTML = '';
+                const data = (res && res.data) || [];
+                if (Array.isArray(data) && data.length){
+                    data.forEach(acc => {
+                        const opt = document.createElement('option');
+                        opt.value = acc.id;
+                        opt.textContent = `${acc.platform_name || ''} - ${acc.username || ''}`;
+                        sel.appendChild(opt);
+                    });
+                }else{
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '无可用账号';
+                    sel.appendChild(opt);
+                }
+            }catch(e){
+                console.error(e);
+            }
+        }
+        async function submitCollect(){
+            const keyword = document.getElementById('collectKeyword').value.trim();
+            const accountId = document.getElementById('collectAccount').value;
+            if (!keyword){ MessageManager.warning('请输入采集关键词'); return; }
+            if (!accountId){ MessageManager.warning('请选择采集账号'); return; }
+            try{
+                const apiInstance = api();
+                if (!apiInstance){
+                    MessageManager.error('API 未就绪');
+                    return;
+                }
+                // 改为调用评论控制器的采集逻辑（将采集结果写入 comments 表）
+                const result = await apiInstance.handle_api_call({
+                    plugin_name: pluginName,
+                    version: version,
+                    controller_name: 'comment_controller',
+                    method_name: 'collect_comments',
+                    keyword: keyword,
+                    account_id: accountId,
+                    need_control_window: true
+                });
+                if (result && result.success){
+                    MessageManager.success(result.message || '采集任务已启动');
+                    hideCollectDialog();
+                }else{
+                    MessageManager.error((result && (result.message || result.data)) || '采集启动失败');
+                }
+            }catch(e){
+                console.error(e);
+                MessageManager.error('采集启动失败');
+            }
+        }
+
+        async function submitDialog(){
+            const id = document.getElementById('editId').value;
+            const payload = {
+                controller_name: 'comment_controller',
+                method_name: id? 'update_comment' : 'add_comment',
+                id: id,
+                link: document.getElementById('link').value.trim(),
+                content: document.getElementById('content').value.trim(),
+                comment_time: document.getElementById('comment_time').value.trim(),
+                author: document.getElementById('author').value.trim(),
+                ip: document.getElementById('ip').value.trim()
+            };
+            const result = await api().handle_api_call(payload);
+            if (result && result.success){
+                MessageManager.success(result.data || '成功');
+                hideDialog();
+                loadItems(currentPage, keyword, pageSize);
+            }else{
+                MessageManager.error((result && result.data) || '失败');
+            }
+        }
+
+        async function deleteItem(id){
+            const ok = await Message.confirm({title:'删除确认', content:`确定要删除 ${id} 吗？`, type: MessageManager.types.WARNING});
+            if (!ok) return;
+            const result = await api().handle_api_call({
+                controller_name: 'comment_controller',
+                method_name: 'delete_comment',
+                id: id
+            });
+            if (result && result.success){
+                MessageManager.success('删除成功');
+                loadItems(currentPage, keyword, pageSize);
+            }else{
+                MessageManager.error((result && result.data) || '删除失败');
+            }
+        }
+
+        async function batchDelete(){
+            const ids = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb=>cb.value);
+            if (ids.length===0){ MessageManager.warning('请选择要删除的评论'); return; }
+            const ok = await Message.confirm({title:'批量删除确认', content:`确定要删除选中的 ${ids.length} 项吗？`, type: MessageManager.types.WARNING});
+            if (!ok) return;
+            const result = await api().handle_api_call({
+                controller_name: 'comment_controller',
+                method_name: 'batch_delete_comments',
+                ids: ids
+            });
+            if (result && result.success){
+                MessageManager.success('批量删除成功');
+                document.getElementById('selectAll').checked = false;
+                loadItems(currentPage, keyword, pageSize);
+            }else{
+                MessageManager.error((result && result.data) || '批量删除失败');
+            }
+        }
+
+        async function refreshList(){
+            const btn = document.querySelector('.btn.cyan');
+            const text = btn.textContent; btn.textContent='刷新中...'; btn.disabled=true;
+            await loadItems(currentPage, keyword, pageSize);
+            btn.textContent=text; btn.disabled=false;
+        }
+
+        function waitForPywebviewAndLoad(){
+            const apiInstance = api();
+            console.log('检查API可用性:', apiInstance);
+            if (apiInstance) { 
+                console.log('API已就绪，开始加载数据');
+                loadItems(1, '', 10); 
+            } else { 
+                console.log('API未就绪，300ms后重试');
+                setTimeout(waitForPywebviewAndLoad, 300); 
+            }
+        }
+        document.addEventListener('DOMContentLoaded', ()=>{ waitForPywebviewAndLoad(); });
+    </script>
+</body>
+<!-- 说明：本页调用方式与 example.html 一致，通过 pywebview API 访问后端 CommentController -->
+</html>
+
+
+
+
+
+
+

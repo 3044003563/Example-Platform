@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音管理系统</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧菜单 -->
+        <div class="sidebar">
+            
+            <nav class="menu">
+                <ul>
+                    <li class="menu-item active" data-page="example.html">
+                        <i class="fas fa-link"></i>
+                        <span>项目管理</span>
+                    </li>
+                    <li class="menu-item" data-page="example.html">
+                        <i class="fas fa-user"></i>
+                        <span>项目管理1</span>
+                    </li>
+                    <li class="menu-item" data-page="comment.html">
+                        <i class="fas fa-user"></i>
+                        <span>评论管理</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content">
+            <iframe id="contentFrame" src="example.html" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // 菜单点击事件处理
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有活动状态
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                
+                // 添加当前项的活动状态
+                this.classList.add('active');
+                
+                // 更新iframe的src
+                const page = this.getAttribute('data-page');
+                document.getElementById('contentFrame').src = page;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>运行日志</title>
+    <link rel="stylesheet" href="../css/runlog.css">
+    <script src="../js/message.js"></script>
+    <link rel="stylesheet" href="../css/message.css"  >
+</head>
+<body>
+<div class="task-container">
+    <div class="task-header">
+        <h2>运行日志</h2>
+    </div>
+    <div class="task-table-wrapper">
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>任务名称</th>
+                    <th>运行结果</th>
+                    <th>运行日志</th>
+                    <th>运行时间</th>
+                </tr>
+            </thead>
+            <tbody id="logTableBody">
+                <!-- 动态渲染日志行 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+
+
+    // 从url获取参数
+    const pluginName = "task-scheduler";
+    const version = "1.0.0";
+
+
+    // 拉取运行日志列表并渲染
+    async function loadLogList() {
+        try {
+            const api = window.parent.parent.pywebview.api.plugin;
+            if (!api) throw new Error('pywebview API 未找到');
+
+            const response = await api.handle_api_call(
+                pluginName,
+                version,
+                'runlog_controller',
+                'get_log_list'
+            );
+
+            const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+
+            if (responseData.success) {
+                renderLogs(responseData.data);
+            } else {
+                Message.error('获取运行日志失败: ' + (responseData.message || '未知错误'));
+            }
+        } catch (error) {
+            console.error('加载运行日志失败:', error);
+            Message.error('加载运行日志失败: ' + error.message);
+        }
+    }
+
+    // 渲染日志表格
+    function renderLogs(logs) {
+        const tbody = document.getElementById('logTableBody');
+        if (!logs || logs.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 20px;">
+                        暂无运行日志！
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        tbody.innerHTML = logs.map(log => `
+            <tr>
+                <td>${log.task_name || '未知任务'}</td>
+                <td>
+                    <span class="${log.result === '成功' ? 'status-success' : 'status-failed'}">
+                        ${log.result}
+                    </span>
+                </td>
+                <td style="max-width:500px;word-break:break-all;">
+                    <div class="log-content">${log.log || ''}</div>
+                </td>
+                <td>${log.run_time || ''}</td>
+            </tr>
+        `).join('');
+    }
+
+    // 等待 pywebview API
+    function waitForPywebview() {
+        return new Promise((resolve) => {
+            const checkPywebview = () => {
+                try {
+                    if (window.top.pywebview && window.top.pywebview.api) {
+                        resolve(window.top.pywebview.api);
+                    } else {
+                        setTimeout(checkPywebview, 100);
+                    }
+                } catch (error) {
+                    setTimeout(checkPywebview, 100);
+                }
+            };
+            checkPywebview();
+        });
+    }
+
+    // 页面加载后自动拉取
+    document.addEventListener('DOMContentLoaded', loadLogList);
+</script>
+ 
+
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+/* 参考setting.css风格，简洁美观 */
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "微软雅黑", "Microsoft YaHei", Arial, sans-serif;
+    background: #f7f8fa;
+    overflow: auto;
+}
+
+.task-container {
+    margin: 20px;
+    background: #fff;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.task-header h2 {
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+    font-weight: normal;
+}
+
+.task-add-btn {
+    background: #1890ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 7px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.task-add-btn:hover {
+    background: #40a9ff;
+}
+
+.task-table-wrapper {
+    overflow: auto;
+}
+
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.task-table th, .task-table td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.task-table th {
+    background: #fafafa;
+    color: #666;
+    font-weight: normal;
+}
+
+.status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.status.running {
+    background: #52c41a;
+}
+
+.status.paused {
+    background: #bfbfbf;
+}
+
+.action-btn {
+    background: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+    border-radius: 2px;
+    padding: 4px 12px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    color: #1890ff;
+    border-color: #1890ff;
+}
+
+.action-btn.primary {
+    background: #1890ff;
+    border-color: #1890ff;
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: #40a9ff;
+    border-color: #40a9ff;
+}
+
+.action-btn.danger {
+    color: #ff4d4f;
+    border-color: #ff4d4f;
+}
+
+.action-btn.danger:hover {
+    background: #ff4d4f;
+    color: #fff;
+}
+
+/* 弹窗样式 */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 36px 48px 28px 48px;
+    min-width: 420px;
+    max-width: 520px;
+    box-shadow: 0 4px 32px #00000022;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.close {
+    position: absolute;
+    right: 22px;
+    top: 18px;
+    font-size: 22px;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close:hover {
+    color: #ff4d4f;
+}
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+.icon-clock {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: url('../../icons/task.svg') no-repeat center/contain;
+    vertical-align: middle;
+}
+.modal-desc {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+#taskForm {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+#taskForm label,
+#taskForm .freq-group,
+#taskForm .freq-detail,
+#taskForm .enable-row {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    color: #444;
+    gap: 10px;
+    margin-bottom: 0;
+}
+#taskForm label {
+    min-width: 0;
+    margin-bottom: 0;
+}
+#taskForm input[type="text"],
+#taskForm input[type="number"],
+#taskForm select {
+    flex: 1;
+    min-width: 0;
+    padding: 7px 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 15px;
+    margin-left: 8px;
+    background: #fafbfc;
+}
+#taskForm input[type="number"] {
+    width: 80px;
+    min-width: 60px;
+    text-align: left;
+}
+.freq-group {
+    gap: 18px;
+    margin-top: 2px;
+    margin-bottom: 0;
+}
+.freq-group label {
+    font-weight: 400;
+    color: #666;
+    gap: 4px;
+    margin-bottom: 0;
+}
+.freq-detail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    margin-bottom: 0;
+}
+.freq-detail label {
+    min-width: 0;
+    margin-bottom: 0;
+}
+.freq-detail .freq-desc {
+    color: #888;
+    font-size: 14px;
+    margin-left: 8px;
+    flex: 1 1 100%;
+    margin-top: 4px;
+}
+.weekday-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+}
+.weekday-group label {
+    margin: 0 4px 0 0;
+    font-weight: 400;
+    color: #444;
+}
+.enable-row {
+    margin-top: 6px;
+    gap: 8px;
+}
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 18px;
+    margin-top: 10px;
+}
+.save-btn, .cancel-btn {
+    min-width: 80px;
+    padding: 7px 0;
+    border-radius: 4px;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.save-btn {
+    background: #1890ff;
+    color: #fff;
+}
+.save-btn:hover {
+    background: #40a9ff;
+}
+.cancel-btn {
+    background: #f5f5f5;
+    color: #888;
+    border: 1px solid #e0e0e0;
+}
+.cancel-btn:hover {
+    background: #fbeaea;
+    color: #ff4d4f;
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}

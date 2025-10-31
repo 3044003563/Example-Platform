@@ -1,0 +1,10 @@
+
+include myrpa-plugin-template/manifest.json
+recursive-include myrpa-plugin-template/views *
+recursive-include myrpa-plugin-template/data *
+recursive-include myrpa-plugin-template/controllers *.pyd
+recursive-include myrpa-plugin-template/models *.pyd
+recursive-include myrpa-plugin-template/utils *.pyd
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .git

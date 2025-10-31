@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音管理系统</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+ 
+</head>
+<body>
+    <!-- 左侧导航栏 -->
+    <div class="sidebar">
+        <!-- 添加头像区域 -->
+        <div class="avatar-container">
+            <div class="avatar" onclick="window.open('https://myagent.im/admin/', '_blank')" title="访问管理后台">
+                <i class="fas fa-user"></i>
+                <!-- 这里可以替换为实际头像图片 -->
+                <!-- <img src="../images/default-avatar.png" alt="用户头像"> -->
+            </div>
+        </div>
+        
+        <div class="sidebar-item active" data-title="首页" onclick="navigateTo('index.html')">
+            <i class="fas fa-home"></i>
+        </div>
+        <div class="sidebar-item" data-title="市场" onclick="navigateTo('market.html')">
+            <i class="fas fa-store"></i>
+        </div>
+
+        <div class="sidebar-item" data-title="定时" onclick="navigateTo('task.html')">
+            <i class="fas fa-clock"></i>
+        </div>
+
+        <div class="sidebar-item" data-title="推广" onclick="navigateTo('promotion.html')">
+            <i class="fas fa-bullhorn"></i>
+        </div>
+        <div class="sidebar-item" data-title="设置" onclick="navigateTo('settings.html')">
+            <i class="fas fa-cog"></i>
+        </div>
+    </div>
+    
+    <!-- 右侧内容区 -->
+    <div class="content">
+        <iframe id="contentFrame" src="index.html"></iframe>
+    </div>
+
+    <script>
+        // 导航函数
+        function navigateTo(page) {
+            document.getElementById('contentFrame').src = page;
+            
+            // 更新活动状态
+            const items = document.querySelectorAll('.sidebar-item');
+            items.forEach(item => item.classList.remove('active'));
+            
+            // 找到当前点击的项并添加活动类
+            const clickedItem = Array.from(items).find(
+                item => item.getAttribute('onclick').includes(page)
+            );
+            if (clickedItem) clickedItem.classList.add('active');
+        }
+        
+        // 初始加载时设置首页为活动状态
+        document.addEventListener('DOMContentLoaded', function() {
+            const homeItem = document.querySelector('.sidebar-item[data-title="首页"]');
+            homeItem.classList.add('active');
+        });
+    </script>
+</body>
+</html>

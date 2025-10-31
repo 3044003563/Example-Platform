@@ -1,0 +1,44 @@
+{
+    "name":"抖音AI矩阵",
+    "description":"包含抖音多账号管理、批量采集链接、自动评论、自动私信、视频批量发布等功能。",
+    "icon":"douyin",
+    "category":"",
+    "platform":"抖音",
+    "parent_id":"10003",
+    "route":"views/pages/douyinlink.html",
+    "sort_order": 1,
+    "monthly_price": 49.9,
+    "half_yearly_price": 299,
+    "yearly_price": 499,
+    "status": 1,
+    "plugin_name":"myagent-plugin-template",
+    "designer_id":"10032",
+    "developer_id":"10032",
+    "changelog":"修复一些已知的bug",
+    "child_application": [
+        {
+            "name": "账号管理",
+            "description": "账号管理",
+            "icon": "douyin",
+            "route": "views/pages/douyinaccount.html",
+            "sort_order": 1,
+            "status": 1
+        },
+        {
+            "name": "链接管理",
+            "description": "链接管理",
+            "icon": "douyin",
+            "route": "views/pages/douyinlink.html",
+            "sort_order": 2,
+            "status": 1
+        },
+        {
+            "name": "视频管理",
+            "description": "视频管理",
+            "icon": "douyin",
+            "route": "views/pages/video.html",
+            "sort_order": 3,
+            "status": 1
+        }
+    ]
+}

@@ -1,0 +1,382 @@
+/* 整体容器 */
+.example-container {
+    padding: 20px;
+    background: #fff;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 按钮组样式 */
+.action-bar {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    transition: all 0.3s;
+}
+
+.btn i {
+    font-size: 12px;
+}
+
+.btn.blue { background: #1890ff; color: white; }
+.btn.green { background: #52c41a; color: white; }
+.btn.red { background: #ff4d4f; color: white; }
+.btn.cyan { background: #13c2c2; color: white; }
+.btn.gray { background: #d9d9d9; color: #666; }
+
+.btn:hover { opacity: 0.8; }
+
+/* 搜索栏样式 */
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    display: flex;
+    align-items: center;
+    max-width: 300px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.search-input input {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    outline: none;
+    font-size: 12px;
+}
+
+.search-btn {
+    padding: 6px 12px;
+    background: #1890ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.search-btn i {
+    font-size: 12px;
+}
+
+/* 表格样式 */
+.table-container {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.item-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* 表格单元格基础样式 */
+.item-table th,
+.item-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #e8e8e8;
+    font-size: 12px;
+}
+
+/* 表头样式 */
+.item-table th {
+    background: #fafafa;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+}
+
+/* 表格行悬停效果 */
+.item-table tr:hover {
+    background: #f5f5f5;
+}
+
+/* 标题和链接列左对齐 */
+.item-table th:nth-child(2),
+.item-table th:nth-child(3),
+.item-table td:nth-child(2),
+.item-table td:nth-child(3) {
+    text-align: left;
+}
+
+/* 其他列居中对齐 */
+.item-table th:not(:nth-child(2)):not(:nth-child(3)),
+.item-table td:not(:nth-child(2)):not(:nth-child(3)) {
+    text-align: center;
+}
+
+/* 复选框列宽度 */
+.item-table th:first-child,
+.item-table td:first-child {
+    width: 40px;
+}
+
+/* 操作列宽度 */
+.item-table th:last-child,
+.item-table td:last-child {
+    width: 120px;
+}
+
+/* 复选框样式 */
+.item-table input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* 操作按钮样式 */
+.link-btn {
+    color: #1890ff;
+    text-decoration: none;
+    font-size: 12px;
+    cursor: pointer;
+    margin: 0 6px;
+    transition: color 0.3s;
+}
+
+.link-btn:hover {
+    color: #40a9ff;
+}
+
+.link-btn.delete {
+    color: #ff4d4f;
+}
+
+.link-btn.delete:hover {
+    color: #ff7875;
+}
+
+/* 分页样式 */
+.pagination {
+    padding: 16px 0;
+    background: white;
+}
+
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.pagination-info {
+    color: #666;
+    font-size: 12px;
+}
+
+.pagination-info span {
+    margin: 0 4px;
+    color: #1890ff;
+}
+
+.page-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #666;
+}
+
+.page-size select {
+    padding: 4px 8px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 12px;
+    outline: none;
+    width: 45px;  /* 减小宽度 */
+}
+
+.page-size select:hover {
+    border-color: #40a9ff;
+}
+
+.page-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+.page-numbers span {
+    min-width: 24px;     /* 减小最小宽度 */
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    padding: 0 6px;      /* 减小内边距 */
+    font-size: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.page-numbers span:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.page-numbers span.current {
+    background: #1890ff;
+    color: white;
+    border-color: #1890ff;
+}
+
+.page-btn {
+    width: 24px;         /* 设置固定宽度 */
+    height: 24px;
+    padding: 0;
+    font-size: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-btn:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.page-jump {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.page-jump input {
+    width: 32px;         /* 减小宽度 */
+    height: 24px;
+    padding: 0 4px;      /* 减小内边距 */
+    font-size: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    outline: none;
+    text-align: center;
+}
+
+.page-jump input:hover,
+.page-jump input:focus {
+    border-color: #40a9ff;
+}
+
+.page-jump button {
+    height: 24px;
+    padding: 0 8px;      /* 减小内边距 */
+    min-width: 40px;     /* 设置最小宽度 */
+    font-size: 12px;
+}
+
+/* 弹窗样式 */
+.modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    min-width: 400px;
+    font-size: 12px;
+}
+
+.modal-content h3 {
+    font-size: 14px;
+    margin-bottom: 16px;
+    font-weight: normal;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.form-group input {
+    width: 100%;
+    font-size: 12px;
+    padding: 6px 8px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+/* 链接按钮样式 */
+.link-btn {
+    color: #1890ff;
+    text-decoration: none;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.link-btn:hover {
+    color: #40a9ff;
+}
+
+.link-btn.delete {
+    color: #ff4d4f;
+}
+
+.link-btn.delete:hover {
+    color: #ff7875;
+}
+
+.separator {
+    margin: 0 8px;
+    color: #d9d9d9;
+}
+
+/* 修改表头复选框的样式 */
+.item-table thead th {
+    vertical-align: middle; /* 垂直居中 */
+}
+
+/* 确保表头单元格高度一致 */
+.item-table th {
+    height: 40px; /* 设置一个固定高度 */
+    line-height: 40px; /* 行高等于高度，确保文字垂直居中 */
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>定时任务中心</title>
+    <link rel="stylesheet" href="../css/task.css">
+    <script src="../js/message.js"></script>
+    <link rel="stylesheet" href="../css/message.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="task-center-container">
+    <!-- 左侧菜单 -->
+    <div class="task-menu">
+        <div class="menu-items">
+            <a onclick="switchTaskPage('taskschedule')" class="active">
+                <i class="fas fa-clock"></i>定时任务
+            </a>
+            <a onclick="switchTaskPage('runlog')">
+                <i class="fas fa-list-alt"></i>执行日志
+            </a>
+        </div>
+    </div>
+    <!-- 右侧内容区 -->
+    <div class="task-content">
+        <iframe id="taskFrame" src="taskschedule.html" frameborder="0"></iframe>
+    </div>
+</div>
+
+<script>
+    function switchTaskPage(page) {
+        const frame = document.getElementById('taskFrame');
+        const menuItems = document.querySelectorAll('.menu-items a');
+        // 更新菜单激活状态
+        menuItems.forEach(item => {
+            item.classList.remove('active');
+            if(item.getAttribute('onclick').includes(page)) {
+                item.classList.add('active');
+            }
+        });
+        // 加载对应页面
+        frame.src = page + '.html';
+    }
+</script>
+</body>
+</html>

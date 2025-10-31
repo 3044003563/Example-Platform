@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>定时器任务管理</title>
+    <link rel="stylesheet" href="../css/taskschedule.css">
+    <script src="../js/message.js"></script>
+    <link rel="stylesheet" href="../css/message.css"  >
+
+</head>
+<body>
+<div class="task-container">
+    <div class="task-header">
+        <h2>定时器任务管理</h2>
+    </div>
+    <div class="task-table-wrapper">
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>任务名称</th>
+                    <th>定时时间</th>
+                    <th>Cron表达式</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="taskTableBody">
+                <!-- 动态渲染任务行 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+ 
+
+<script>
+
+ 
+    const pluginName = "task-scheduler";
+    const version = "1.0.0";
+
+    function toggleTask(idx) {
+        tasks[idx].status = tasks[idx].status === '运行中' ? '已暂停' : '运行中';
+        renderTasks();
+    }
+
+    function deleteTask(idx) {
+        if (confirm('确定要删除该任务吗？')) {
+            tasks.splice(idx, 1);
+            renderTasks();
+        }
+    }
+
+    function openAddTaskDialog() {
+        document.getElementById('taskDialog').style.display = 'block';
+    }
+    function closeTaskDialog() {
+        document.getElementById('taskDialog').style.display = 'none';
+    }
+
+
+ 
+
+
+
+    // 拉取定时任务列表并渲染
+    async function loadTaskList() {
+        try {
+
+
+            const api = window.parent.parent.pywebview.api.plugin;
+            if (!api) throw new Error('pywebview API 未找到');
+
+            const response = await api.handle_api_call(
+                    pluginName,
+                    version,
+                    'task_controller',
+                    'get_task_list'  // 新增一个方法来获取已启用的账号
+                );
+
+            console.log(response);
+
+
+            const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+
+            if (responseData.success) {
+                renderTasks(responseData.data);
+            } else {
+                Message.error('获取定时任务失败: ' + (responseData.message || '未知错误'));
+            }
+        } catch (error) {
+            console.error('加载定时任务失败:', error);
+            Message.error('加载定时任务失败: ' + error.message);
+        }
+    }
+
+    // 频率类型映射
+    const freqTypeMap = {
+        'minute': '每分',
+        'hour': '每时',
+        'day': '每天',
+        'week': '每周',
+        'month': '每月',
+        'custom': '高级'
+    };
+
+    // 渲染任务表格
+    function renderTasks(tasks) {
+        const tbody = document.getElementById('taskTableBody');
+        if (!tasks || tasks.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px;">
+                        暂无定时任务！
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        tbody.innerHTML = tasks.map((task, idx) => `
+            <tr>
+                <td>${task.name || ''}</td>
+                <td>${task.freq_desc || ''}</td>
+                <td>${task.freq_value || ''}</td>
+                <td>
+                    <span class="status ${task.enabled == 1 ? 'running' : 'paused'}">
+                        ${task.enabled == 1 ? '启用' : '停用'}
+                    </span>
+                </td>
+                <td>
+                    <button class="action-btn primary" onclick="executeTask(${task.id})">执行</button>
+                    <button class="action-btn danger" onclick="deleteTask(${task.id})">删除</button>
+                    <button class="action-btn" onclick="toggleEnableTask(${task.id}, ${task.enabled})">
+                        ${task.enabled == 1 ? '停用' : '启用'}
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+
+   
+    async function deleteTask(id) {
+        if (!id) {
+            Message.error('任务ID无效');
+            return;
+        }
+        if (confirm('确定要删除该任务吗？')) {
+            try {
+                const api = window.parent.parent.pywebview.api.plugin;
+                if (!api) throw new Error('pywebview API 未找到');
+                
+                const response = await api.handle_api_call(
+                    pluginName,
+                    version,
+                    'task_controller',
+                    'delete_task',
+                    id
+                );
+
+
+                const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+
+                if (responseData.success) {
+                    Message.success('删除成功');
+                    loadTaskList(); // 刷新列表
+                } else {
+                    Message.error('删除失败: ' + (responseData.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('删除任务失败:', error);
+                Message.error('删除失败: ' + error.message);
+            }
+        }
+    }
+
+    // 启用/停用任务
+    async function toggleEnableTask(id, currentEnabled) {
+        try {
+            const api = window.parent.parent.pywebview.api.plugin;
+            if (!api) throw new Error('pywebview API 未找到');
+
+            // 切换状态：1->0 或 0->1
+            const newEnabled = currentEnabled == 1 ? 0 : 1;
+            
+            const response = await api.handle_api_call(
+                    pluginName,
+                    version,
+                    'task_controller',
+                    'toggle_task_status',
+                    id,
+                    newEnable
+                );
+      
+
+            const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+
+            if (responseData.success) {
+                Message.success(newEnabled == 1 ? '任务已启用' : '任务已停用');
+                loadTaskList(); // 刷新列表
+            } else {
+                Message.error('操作失败: ' + (responseData.message || '未知错误'));
+            }
+        } catch (error) {
+            console.error('切换任务状态失败:', error);
+            Message.error('操作失败: ' + error.message);
+        }
+    }
+
+    // 添加手工执行任务的函数
+    async function executeTask(id) {
+        try {
+            if (!confirm('确定要立即执行该任务吗？')) {
+                return;
+            }
+
+            const api = window.parent.parent.pywebview.api.plugin;
+            if (!api) throw new Error('pywebview API 未找到');
+            
+            Message.info('正在执行任务...');
+            
+            const response = await api.handle_api_call(
+                    pluginName,
+                    version,
+                    'task_controller',
+                    'execute_task',
+                    id
+                );
+
+
+            const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+
+            if (responseData.success) {
+                Message.success('任务执行成功');
+            } else {
+                Message.error('执行失败: ' + (responseData.message || '未知错误'));
+            }
+        } catch (error) {
+            console.error('执行任务失败:', error);
+            Message.error('执行失败: ' + error.message);
+        }
+    }
+
+    // 等待 pywebview API
+    function waitForPywebview() {
+        return new Promise((resolve) => {
+            const checkPywebview = () => {
+                try {
+                    if (window.top.pywebview && window.top.pywebview.api) {
+                        resolve(window.top.pywebview.api);
+                    } else {
+                        setTimeout(checkPywebview, 100);
+                    }
+                } catch (error) {
+                    setTimeout(checkPywebview, 100);
+                }
+            };
+            checkPywebview();
+        });
+    }
+
+    // 页面加载后自动拉取
+    document.addEventListener('DOMContentLoaded', loadTaskList);
+
+   
+</script>
+
+<style>
+.action-btn.primary {
+    background-color: #1890ff;
+    color: white;
+    margin-right: 5px;
+}
+.action-btn.primary:hover {
+    background-color: #40a9ff;
+}
+</style>
+</body>
+</html>

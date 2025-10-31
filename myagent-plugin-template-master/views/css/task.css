@@ -1,0 +1,87 @@
+/* task.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.task-center-container {
+    display: flex;
+    height: 100%;
+    background: white;
+    overflow: hidden;
+    border-top: 1px solid #eee;
+}
+
+.task-menu {
+    width: 180px;
+    padding: 16px 0;
+    position: relative;
+}
+
+.task-menu::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #eee;
+}
+
+.menu-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-items a {
+    padding: 10px 20px;
+    color: #666;
+    text-decoration: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.menu-items a:hover {
+    color: #333;
+}
+
+.menu-items a.active {
+    color: #ff4d4f;
+    font-weight: 600;
+}
+
+.menu-items i {
+    width: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.task-content {
+    flex: 1;
+    overflow: hidden;
+}
+
+.task-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 页面通用样式 */
+.page-container {
+    padding: 20px;
+    height: 100%;
+    overflow: auto;
+}
+
+.page-container h2 {
+    margin: 0 0 20px;
+    font-size: 18px;
+    color: #333;
+}

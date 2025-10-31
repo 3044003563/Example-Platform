@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Quiz Helper 设置</title>
+  <style>
+    body { font-family: Arial, sans-serif; width:300px; padding:12px; }
+    label { display:block; margin-top:8px; font-weight:600; }
+    input[type="text"], input[type="url"], textarea { width:100%; box-sizing:border-box; padding:6px; margin-top:4px; }
+    button { margin-top:10px; padding:8px 12px; }
+    .hint { font-size:12px; color:#666; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <h3>Quiz Helper 设置</h3>
+
+  <label>AI 接口 URL（POST）</label>
+  <input id="apiUrl" type="url" placeholder="https://api.example.com/predict">
+
+  <label>API Key / Token</label>
+  <input id="apiKey" type="text" placeholder="Bearer ...">
+
+  <label>请求模板（可选）</label>
+  <textarea id="payloadTemplate" rows="5" placeholder='{"question": "{{question}}"}'></textarea>
+  <div class="hint">使用 {{question}} 占位符插入题目文本。若留空，默认发送 {"question":"..."}。</div>
+
+  <button id="saveBtn">保存设置</button>
+  <div id="status" class="hint"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
